@@ -11,41 +11,45 @@ resource "azurerm_resource_group" "rg1" {
 }
 
 resource "azurerm_virtual_network" "vnet1" {
-  name                = "myVNet"
+  name                = "wap-vnet"
   resource_group_name = azurerm_resource_group.rg1.name
   location            = azurerm_resource_group.rg1.location
   address_space       = ["10.21.0.0/16"]
+  tags                = azurerm_resource_group.rg1.tags
 }
 
 resource "azurerm_subnet" "frontend" {
-  name                 = "myAGSubnet"
+  name                 = "wap-ag-subnet"
   resource_group_name  = azurerm_resource_group.rg1.name
   virtual_network_name = azurerm_virtual_network.vnet1.name
   address_prefixes     = ["10.21.0.0/24"]
+
 }
 
 resource "azurerm_subnet" "backend" {
-  name                 = "myBackendSubnet"
+  name                 = "wap-be-subnet"
   resource_group_name  = azurerm_resource_group.rg1.name
   virtual_network_name = azurerm_virtual_network.vnet1.name
   address_prefixes     = ["10.21.1.0/24"]
 }
 
-resource "azurerm_public_ip" "pip1" {
-  name                = "myAGPublicIPAddress"
+resource "azurerm_public_ip" "pubip" {
+  name                = "wap-ag-pubip"
   resource_group_name = azurerm_resource_group.rg1.name
   location            = azurerm_resource_group.rg1.location
   allocation_method   = "Static"
   sku                 = "Standard"
+  tags                = azurerm_resource_group.rg1.tags
 }
 
 
 
 resource "azurerm_application_gateway" "network" {
-  name                = "myAppGateway"
+  name                = "wap-ag-network"
   resource_group_name = azurerm_resource_group.rg1.name
   location            = azurerm_resource_group.rg1.location
-
+  tags                = azurerm_resource_group.rg1.tags
+  
   sku {
     name     = "Standard_v2"
     tier     = "Standard_v2"
@@ -53,7 +57,7 @@ resource "azurerm_application_gateway" "network" {
   }
 
   gateway_ip_configuration {
-    name      = "my-gateway-ip-configuration"
+    name      = "wap-pubip-configuration"
     subnet_id = azurerm_subnet.frontend.id
   }
 
@@ -64,7 +68,7 @@ resource "azurerm_application_gateway" "network" {
 
   frontend_ip_configuration {
     name                 = var.frontend_ip_configuration_name
-    public_ip_address_id = azurerm_public_ip.pip1.id
+    public_ip_address_id = azurerm_public_ip.pubip.id
   }
 
   backend_address_pool {
@@ -101,7 +105,8 @@ resource "azurerm_network_interface" "nic" {
   name                = "nic-${count.index + 1}"
   location            = azurerm_resource_group.rg1.location
   resource_group_name = azurerm_resource_group.rg1.name
-
+  tags                = azurerm_resource_group.rg1.tags
+  
   ip_configuration {
     name                          = "nic-ipconfig-${count.index + 1}"
     subnet_id                     = azurerm_subnet.backend.id
@@ -127,12 +132,13 @@ resource "random_password" "password" {
 
 resource "azurerm_windows_virtual_machine" "vm" {
   count               = 2
-  name                = "myVM${count.index + 1}"
+  name                = "labvm-0${count.index + 1}"
   resource_group_name = azurerm_resource_group.rg1.name
   location            = azurerm_resource_group.rg1.location
   size                = "Standard_DS1_v2"
   admin_username      = "azureadmin"
   admin_password      = random_password.password.result
+  tags                = azurerm_resource_group.rg1.tags
 
   network_interface_ids = [
     azurerm_network_interface.nic[count.index].id,
@@ -159,7 +165,8 @@ resource "azurerm_virtual_machine_extension" "vm-extensions" {
   publisher            = "Microsoft.Compute"
   type                 = "CustomScriptExtension"
   type_handler_version = "1.10"
-
+  tags                 = azurerm_resource_group.rg1.tags
+  
   settings = <<SETTINGS
     {
         "commandToExecute": "powershell Add-WindowsFeature Web-Server; powershell Add-Content -Path \"C:\\inetpub\\wwwroot\\Default.htm\" -Value $($env:computername)"

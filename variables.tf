@@ -24,7 +24,7 @@ variable "client_secret" {
 
 variable "wap_rg_name" {
   type    = string
-  default = "iaac-azure-tf-test"
+  default = "iaac-azure-tf-webapp2"
 }
 
 variable "wap_rg_location" {
@@ -48,29 +48,29 @@ variable "wap_status_dv" {
 }
 
 variable "backend_address_pool_name" {
-  default = "myBackendPool"
+  default = "wap-be-pool"
 }
 
 variable "frontend_port_name" {
-  default = "myFrontendPort"
+  default = "wap-fe-port"
 }
 
 variable "frontend_ip_configuration_name" {
-  default = "myAGIPConfig"
+  default = "wap-feip"
 }
 
 variable "http_setting_name" {
-  default = "myHTTPsetting"
+  default = "wap-http-setting"
 }
 
 variable "listener_name" {
-  default = "myListener"
+  default = "wap-listener"
 }
 
 variable "request_routing_rule_name" {
-  default = "myRoutingRule"
+  default = "wap-routing-rule"
 }
 
 variable "redirect_configuration_name" {
-  default = "myRedirectConfig"
+  default = "wap-redirect-conf"
 }
