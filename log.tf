@@ -6,7 +6,8 @@ resource "azurerm_log_analytics_workspace" "wap_logs" {
   resource_group_name       = var.wap_rg_name
   sku                       = "PerGB2018"
   retention_in_days         = "30"
-
+  depends_on                = [azurerm_resource_group.rg1]
+  
   tags = {
     owner  = var.owner
     dept   = var.department

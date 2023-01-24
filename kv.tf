@@ -4,7 +4,7 @@
 
 data "azurerm_client_config" "current" {}
 
-resource "azurerm_key_vault" "wap-kv" {
+resource "azurerm_key_vault" "wap-vault" {
   name = "wap-kv"
   location = var.wap_rg_location
   resource_group_name = var.wap_rg_name
