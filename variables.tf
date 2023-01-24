@@ -74,3 +74,14 @@ variable "request_routing_rule_name" {
 variable "redirect_configuration_name" {
   default = "wap-redirect-conf"
 }
+
+locals {
+  diag_appgw_logs = [
+    "ApplicationGatewayAccessLog",
+    "ApplicationGatewayPerformanceLog",
+    "ApplicationGatewayFirewallLog",
+  ]
+  diag_appgw_metrics = [
+    "AllMetrics",
+  ]
+}
