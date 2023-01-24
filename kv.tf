@@ -5,7 +5,7 @@
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault" "wap-vault" {
-  name = "wap-kv"
+  name = "wap-vault"
   location = var.wap_rg_location
   resource_group_name = var.wap_rg_name
   tenant_id = var.tenant_id
@@ -23,8 +23,8 @@ resource "azurerm_key_vault" "wap-vault" {
 }
 
 resource "azurerm_key_vault_access_policy" "builder" {
-  key_vault_id = azurerm_key_vault.wap-kv.id
-  tenant_id = azurerm_key_vault.wap-kv.tenant_id
+  key_vault_id = azurerm_key_vault.wap-vault.id
+  tenant_id = azurerm_key_vault.wap-vault.tenant_id
   object_id = azurerm_user_assigned_identity.wap.principal_id
   
   certificate_permissions = [
@@ -35,8 +35,8 @@ resource "azurerm_key_vault_access_policy" "builder" {
 }
 
 resource "azurerm_key_vault_access_policy" "wap" {
-  key_vault_id = azurerm_key_vault.wap-kv.id
-  tenant_id = azurerm_key_vault.wap-kv.tenant_id
+  key_vault_id = azurerm_key_vault.wap-vault.id
+  tenant_id = azurerm_key_vault.wap-vault.tenant_id
   object_id = azurerm_user_assigned_identity.wap.principal_id
   
   secret_permissions = [
@@ -46,7 +46,7 @@ resource "azurerm_key_vault_access_policy" "wap" {
 
 resource "azurerm_key_vault_certificate" "wap-certificate" {
   name = "wap-certificate"
-  key_vault_id = azurerm_key_vault.wap-kv.id
+  key_vault_id = azurerm_key_vault.wap-vault.id
 
   certificate_policy {
     issuer_parameters {
