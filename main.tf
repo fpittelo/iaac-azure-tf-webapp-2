@@ -49,7 +49,7 @@ resource "azurerm_application_gateway" "network" {
   resource_group_name = azurerm_resource_group.rg1.name
   location            = azurerm_resource_group.rg1.location
   tags                = azurerm_resource_group.rg1.tags
-  
+
   sku {
     name     = "Standard_v2"
     tier     = "Standard_v2"
@@ -106,7 +106,7 @@ resource "azurerm_network_interface" "nic" {
   location            = azurerm_resource_group.rg1.location
   resource_group_name = azurerm_resource_group.rg1.name
   tags                = azurerm_resource_group.rg1.tags
-  
+
   ip_configuration {
     name                          = "nic-ipconfig-${count.index + 1}"
     subnet_id                     = azurerm_subnet.backend.id
@@ -115,19 +115,19 @@ resource "azurerm_network_interface" "nic" {
 }
 
 resource "azurerm_network_interface_application_gateway_backend_address_pool_association" "nic-assoc01" {
-  count                   = 2
-  network_interface_id    = azurerm_network_interface.nic[count.index].id
-  ip_configuration_name   = "nic-ipconfig-${count.index + 1}"
-# backend_address_pool_id = azurerm_application_gateway.network.backend_address_pool[0].id
+  count                 = 2
+  network_interface_id  = azurerm_network_interface.nic[count.index].id
+  ip_configuration_name = "nic-ipconfig-${count.index + 1}"
+  # backend_address_pool_id = azurerm_application_gateway.network.backend_address_pool[0].id
   backend_address_pool_id = tolist(azurerm_application_gateway.network.backend_address_pool).0.id
 }
 
 resource "random_password" "password" {
-  length   = 16
-  special  = true
-  lower    = true
-  upper    = true
-  numeric  = true
+  length  = 16
+  special = true
+  lower   = true
+  upper   = true
+  numeric = true
 }
 
 resource "azurerm_windows_virtual_machine" "vm" {
@@ -166,7 +166,7 @@ resource "azurerm_virtual_machine_extension" "vm-extensions" {
   type                 = "CustomScriptExtension"
   type_handler_version = "1.10"
   tags                 = azurerm_resource_group.rg1.tags
-  
+
   settings = <<SETTINGS
     {
         "commandToExecute": "powershell Add-WindowsFeature Web-Server; powershell Add-Content -Path \"C:\\inetpub\\wwwroot\\Default.htm\" -Value $($env:computername)"
